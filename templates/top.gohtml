@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Top</title>
+    <link rel="stylesheet" href="../assets/stylesheets/top.css" type="text/css">
+</head>
+
+<body>
+  <div class ="container">   
+    <div class="form-heading">SignUp</div>
+    <div class="form">
+      <div class="form-body-signup">      
+        <form method = "post" action = "/signup">
+          <p>User Name</p>
+          <input type="text" name="username" >
+          <p>Email</p>
+          <input type="text" name="email" >
+          <p>Password</p>
+          <input type="password" name="password">
+          <input type="submit" value="signup!">
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class ="container">   
+    <div class="form-heading">LogIn</div>
+    <div class="form">
+      <div class="form-body-login">      
+        <form method = "post" action = "/login">
+          <p>Email</p>
+          <input type="text" name="email" >
+          <p>Password</p>
+          <input type="password" name="password">
+          <input type="submit" value="login!">
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

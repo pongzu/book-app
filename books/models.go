@@ -2,30 +2,24 @@ package books
 
 import (
 	"book_app/author"
+	"book_app/commonStruct"
 	"book_app/config"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-type Book struct {
-	Id        int
-	Title     string
-	Author    string
-	Price     float64
-	Author_id int
-}
-
-func AllBooks() ([]Book, error) {
+func AllBooks() ([]commonStruct.Book, error) {
 	rows, err := config.DB.Query("SELECT * FROM books")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var bks []Book
+	var bks []commonStruct.Book
 	for rows.Next() {
-		bk := Book{}
+		bk := commonStruct.Book{}
 		if err := rows.Scan(&bk.Id, &bk.Title, &bk.Author, &bk.Price, &bk.Author_id); err != nil {
 			return nil, err
 		}
@@ -37,15 +31,34 @@ func AllBooks() ([]Book, error) {
 	return bks, nil
 }
 
-func PutBook(r *http.Request) (Book, error) {
-	var bk = Book{}
+func PutBook(r *http.Request) (commonStruct.Book, error) {
+	var bk = commonStruct.Book{}
 
 	bk.Title = r.FormValue("title")
 	bk.Author = r.FormValue("author")
 	p := r.FormValue("price")
 	//bk.Author_id = 1 // ひとまず
 
-	author.FindAuthor(bk.Author)
+	/// cretate author_id
+	if author.Find(bk.Author) {
+		id, err := author.GetId(bk.Author)
+		if err != nil {
+			log.Println(err)
+			return bk, err
+		}
+		bk.Author_id = id
+	} else {
+		if err := author.Create(bk.Author); err != nil {
+			log.Println(err)
+			return bk, err
+		}
+		id, err := author.GetId(bk.Author)
+		if err != nil {
+			log.Println(err)
+			return bk, err
+		}
+		bk.Author_id = id
+	}
 
 	if bk.Title == "" || bk.Author == "" || p == "" {
 		return bk, errors.New("400. Bad request. All fields must be complete.")
@@ -64,8 +77,8 @@ func PutBook(r *http.Request) (Book, error) {
 	return bk, nil
 }
 
-func OneBook(r *http.Request) (Book, error) {
-	bk := Book{}
+func OneBook(r *http.Request) (commonStruct.Book, error) {
+	var bk = commonStruct.Book{}
 	id, _ := strconv.Atoi(r.FormValue("id"))
 
 	if id == 0 {
@@ -79,8 +92,8 @@ func OneBook(r *http.Request) (Book, error) {
 	return bk, nil
 }
 
-func UpdateBook(r *http.Request) (Book, error) {
-	bk := Book{}
+func UpdateBook(r *http.Request) (commonStruct.Book, error) {
+	var bk = commonStruct.Book{}
 	bk.Id, _ = strconv.Atoi(r.FormValue("id"))
 
 	bk.Title = r.FormValue("title")
