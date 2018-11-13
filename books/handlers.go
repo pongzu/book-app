@@ -41,7 +41,7 @@ func CreateProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/books", http.StatusSeeOther)
 	return
 }
 
@@ -92,14 +92,14 @@ func UpdateProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bk, err := UpdateBook(r)
+	_, err := UpdateBook(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/books/show/%d", bk.Id), http.StatusSeeOther)
+	http.Redirect(w, r, "/books", http.StatusSeeOther)
 }
 
 func DeleteProcess(w http.ResponseWriter, r *http.Request) {

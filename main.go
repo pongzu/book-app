@@ -8,7 +8,10 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", books.Index)
+	http.HandleFunc("/", user.Top)
+	http.HandleFunc("/signup", user.Signup)
+	http.HandleFunc("/login", user.Login)
+	http.HandleFunc("/books", books.Index)
 	http.HandleFunc("/books/create", books.Create)
 	http.HandleFunc("/books/create/process", books.CreateProcess)
 	http.HandleFunc("/books/show", books.Show)
@@ -16,6 +19,5 @@ func main() {
 	http.HandleFunc("/books/update/process", books.UpdateProcess)
 	http.HandleFunc("/books/delete/process", books.DeleteProcess)
 	http.HandleFunc("/author/show", author.Show)
-	http.HandleFunc("/user/top", user.Top)
 	http.ListenAndServe(":8080", nil)
 }

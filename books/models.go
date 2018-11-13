@@ -37,7 +37,6 @@ func PutBook(r *http.Request) (commonStruct.Book, error) {
 	bk.Title = r.FormValue("title")
 	bk.Author = r.FormValue("author")
 	p := r.FormValue("price")
-	//bk.Author_id = 1 // ひとまず
 
 	/// cretate author_id
 	if author.Find(bk.Author) {

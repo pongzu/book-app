@@ -28,7 +28,7 @@
 </head>
 <body>
 {{range .}}
-<p><a href="/books/show?id={{.Id}}">{{.Id}}</a> - {{.Title}} - {{.Author}} - {{.Price}} - <a href="/books/update?id={{.Id}}">update</a>  - <a href="/books/delete/process?id={{.Id}}">delete</a>  - <a href="/author/show?id={{.Author_id}}">chekAuthor</a></p>
+<p><a href="/books/show?id={{.Id}}">{{.Title}} </a> - - {{.Author}} - {{.Price}} - <a href="/books/update?id={{.Id}}">update</a>  - <a href="/books/delete/process?id={{.Id}}">delete</a>  - <a href="/author/show?id={{.Author_id}}">chekAuthor</a></p>
 {{end}}
 
 
