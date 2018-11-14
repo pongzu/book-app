@@ -23,6 +23,6 @@ func alreadyLoggedIn(r *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	_, ok := dbSessions[c.Value]
+	_, ok := sessions[c.Value]
 	return ok
 }

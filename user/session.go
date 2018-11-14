@@ -2,18 +2,28 @@ package user
 
 import (
 	"net/http"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-// dbSeiions: uuid for key, user name for value db
-// session holds user name for hodling current user imformation
-var dbSessions = make(map[string]string)
+// sessions: uuid for key, session for value
+// session holds user name,time.Now() for hodling current user imformation
+type session struct {
+	un           string
+	lastActicity time.Time
+}
+
+var sessions = make(map[string]session)
 
 func (u *User) setSession(w http.ResponseWriter) {
 	c := getCockie()
 	http.SetCookie(w, c)
-	dbSessions[c.Value] = u.Un
+
+	sessions[c.Value] = session{
+		un:           u.Un,
+		lastActicity: time.Now(),
+	}
 }
 
 // returns *http.Cockie
@@ -25,4 +35,13 @@ func getCockie() *http.Cookie {
 		Value: uuid.String(),
 	}
 	return c
+}
+
+// delite sessions once a hour
+func clearnSession(sessions map[string]session) {
+	for cookie, session := range sessions {
+		if time.Now().Sub(session.lastActicity) > (time.Minute * 60) {
+			delete(sessions, cookie)
+		}
+	}
 }
