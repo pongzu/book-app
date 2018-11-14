@@ -1,11 +1,10 @@
 package user
 
 import (
+	"book_app/config"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"trip_app/config"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,7 +28,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) (User, error) {
 	u.Email = r.FormValue("email")
 	p := r.FormValue("password")
 
-	blackchech(w, u.Un, u.Email, p)
+	if err := blackchech(u.Un, u.Email, p); err != nil {
+		return u, err
+	}
+
 	// create hash password
 	bs, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.MinCost)
 	if err != nil {
@@ -49,7 +51,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) (User, error) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	blackchech(w, email, password)
+	if err := blackchech(email, password); err != nil {
+		return u, err
+	}
 
 	row := config.DB.QueryRow("SELECT * FROM users WHERE email = $1", email)
 
@@ -68,22 +72,4 @@ func GetUser(w http.ResponseWriter, r *http.Request) (User, error) {
 		return u, errors.New("400. got wrong password")
 	}
 	return u, nil
-}
-
-func blackchech(w http.ResponseWriter, inputs ...string) {
-	for _, v := range inputs {
-		if v == "" {
-			http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		}
-	}
-	log.Println("no balank for inputs")
-}
-
-func alreadyLoggedIn(r *http.Request) bool {
-	c, err := r.Cookie("session")
-	if err != nil {
-		return false
-	}
-	_, ok := dbSessions[c.Value]
-	return ok
 }

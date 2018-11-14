@@ -3,12 +3,8 @@ package user
 import (
 	"net/http"
 
-	"github.com/satori/go.uuid"
-
-	"trip_app/config"
+	"book_app/config"
 )
-
-var dbSessions = make(map[string]string)
 
 func Top(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "top.gohtml", nil)
@@ -19,21 +15,12 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
 	}
-
+	/// insert values from input to DB
 	u, err := CreateUser(w, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	// create session
-	var c *http.Cookie
-	uuid, err := uuid.NewV4()
-	c = &http.Cookie{
-		Name:  "session",
-		Value: uuid.String(),
-	}
-	http.SetCookie(w, c)
-	//set dbSession
-	dbSessions[c.Value] = u.Un
+	u.setSession(w)
 	// Redirect
 	http.Redirect(w, r, "/books", http.StatusSeeOther)
 }
@@ -52,20 +39,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	var c *http.Cookie
-	c, err = r.Cookie("session")
+	// create session
+	_, err = r.Cookie("session")
 	if err != nil {
-		uuid, err := uuid.NewV4()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		c = &http.Cookie{
-			Name:  "session",
-			Value: uuid.String(),
-		}
-		http.SetCookie(w, c)
+		u.setSession(w)
 	}
-	dbSessions[c.Value] = u.Un
 
 	http.Redirect(w, r, "/books", http.StatusSeeOther)
 }
