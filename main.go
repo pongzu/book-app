@@ -12,6 +12,8 @@ func main() {
 	http.HandleFunc("/", user.Top)
 	http.HandleFunc("/signup", user.Signup)
 	http.HandleFunc("/login", user.Login)
+	http.HandleFunc("/logout", user.Logout)
+
 	http.HandleFunc("/books", books.Index)
 	http.HandleFunc("/books/create", books.Create)
 	http.HandleFunc("/books/create/process", books.CreateProcess)

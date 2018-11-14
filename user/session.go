@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -44,4 +45,16 @@ func clearnSession(sessions map[string]session) {
 			delete(sessions, cookie)
 		}
 	}
+}
+
+// check already logged in
+func alreadyLoggedIn(r *http.Request) bool {
+	c, err := r.Cookie("session")
+	if err != nil {
+		return false
+	}
+	fmt.Println(sessions[c.Value])
+
+	_, ok := sessions[c.Value]
+	return ok
 }
