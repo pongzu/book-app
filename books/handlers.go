@@ -2,11 +2,14 @@ package books
 
 import (
 	"book_app/config"
+	"book_app/user"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 )
+
+var CurrentUser *user.User
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
@@ -20,8 +23,13 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.TPL.ExecuteTemplate(w, "books.gohtml", bks)
+	u, err := user.GetCurrentUser(r)
+	if err != nil {
+		fmt.Printf("can not get current user get with this reason %v:", err)
+	}
+	log.Printf("this is user %v:", u)
 
+	config.TPL.ExecuteTemplate(w, "books.gohtml", bks)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {

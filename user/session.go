@@ -1,6 +1,8 @@
 package user
 
 import (
+	"book_app/config"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -57,4 +59,27 @@ func alreadyLoggedIn(r *http.Request) bool {
 
 	_, ok := sessions[c.Value]
 	return ok
+}
+
+//get user that has already logged in
+func GetCurrentUser(r *http.Request) (User, error) {
+	// initialized user struct and put values from data base
+	var u User
+
+	c, err := r.Cookie("session")
+	if err != nil {
+		return u, errors.New("400. Bad Request. can not get cookie value")
+	}
+	// get userName from session value
+	s := sessions[c.Value]
+	row := config.DB.QueryRow("SELECT * FROM users WHERE username = $1", s.un)
+
+	// just for scanning
+	var p string
+	if err := row.Scan(TrashScanner{}, &u.Un, &u.Email, &p); err != nil {
+		return u, errors.New("500. Internal Server error")
+	}
+	u.Password = []byte(p)
+
+	return u, nil
 }
