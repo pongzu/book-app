@@ -13,3 +13,10 @@ type Author struct {
 	Name  string
 	Books []Book
 }
+
+type Comment struct {
+	Id      int
+	Comment string
+	BookId  int
+	UserId  int
+}

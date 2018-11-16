@@ -63,7 +63,14 @@ func CreateProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := PutComment(r, bk.Title); err != nil {
+	c, err := PutComment(r, bk.Id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+
+	if err := PutRelation(c); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return

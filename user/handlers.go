@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"book_app/config"
@@ -48,7 +47,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		u.setSession(w)
 	}
 
-	fmt.Println(sessions)
 	http.Redirect(w, r, "/books", http.StatusSeeOther)
 }
 

@@ -73,32 +73,52 @@ func PutBook(r *http.Request) (commonStruct.Book, error) {
 	if err != nil {
 		return bk, err
 	}
+	// to get serial id
+	row := config.DB.QueryRow("select books.id from books where title = $1", bk.Title)
+	if err := row.Scan(&bk.Id); err != nil {
+		return bk, err
+	}
+
 	return bk, nil
 }
 
 // putAuthor(r){
 // }
 
-func PutComment(r *http.Request, title string) error {
+func PutComment(r *http.Request, id int) (commonStruct.Comment, error) {
 	comment := r.FormValue("comment")
 	userId, _ := strconv.Atoi(r.FormValue("current_user_id"))
+	bookId := id
 
-	var bookId int
-	row := config.DB.QueryRow("select books.id from books where title = $1", title)
-	if err := row.Scan(&bookId); err != nil {
-		return err
+	var c commonStruct.Comment
+
+	_, err := config.DB.Exec("INSERT INTO comments (comment, book_id, user_id) VALUES ($1, $2, $3)", comment, bookId, userId)
+	if err != nil {
+		return c, err
 	}
+	// to get serial id
+	var i int
+	row := config.DB.QueryRow("select comments.id from comments where comment = $1", comment)
+	if err := row.Scan(&i); err != nil {
+		return c, err
+	}
+	// create structre just for passing
 
-	_, err := config.DB.Exec("INSERT INTO comments (text, book_id, user_id) VALUES ($1, $2, $3)", comment, userId, bookId)
+	c.Id = i
+	c.Comment = comment
+	c.BookId = bookId
+	c.UserId = userId
+
+	return c, nil
+}
+
+func PutRelation(c commonStruct.Comment) error {
+	_, err := config.DB.Exec("INSERT INTO relations (book_id, user_id, comment_id) VALUES ($1, $2, $3)", c.BookId, c.UserId, c.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-
-// func ceateRelation(r){
-//  userId :=
-// }
 
 func OneBook(r *http.Request) (commonStruct.Book, error) {
 	var bk = commonStruct.Book{}
