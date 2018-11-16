@@ -17,6 +17,7 @@ func (TrashScanner) Scan(interface{}) error {
 }
 
 type User struct {
+	Id       int
 	Un       string
 	Email    string
 	Password []byte
@@ -60,7 +61,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) (User, error) {
 	// just for scanning
 	var p string
 
-	err := row.Scan(TrashScanner{}, &u.Un, &u.Email, &p)
+	err := row.Scan(&u.Id, &u.Un, &u.Email, &p)
 	if err != nil {
 		return u, err
 	}

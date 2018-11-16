@@ -4,6 +4,7 @@ import (
 	"book_app/config"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -76,10 +77,12 @@ func GetCurrentUser(r *http.Request) (User, error) {
 
 	// just for scanning
 	var p string
-	if err := row.Scan(TrashScanner{}, &u.Un, &u.Email, &p); err != nil {
+	if err := row.Scan(&u.Id, &u.Un, &u.Email, &p); err != nil {
 		return u, errors.New("500. Internal Server error")
 	}
 	u.Password = []byte(p)
+	log.Println("ここおおっっこっここここ")
+	log.Println(u)
 
 	return u, nil
 }
