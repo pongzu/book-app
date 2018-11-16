@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <title>Create Book</title>
      <link rel="stylesheet" href="../assets/stylesheets/books.css" type="text/css">
-
 </head>
 <body>
-{{range .}}
+
+{{.CurrentUser.Un}}
+
+{{range .BOOKS}}
 <p><a href="/books/show?id={{.Id}}">{{.Title}}</a> - {{.Author}} - {{.Price}} - <a href="/books/update?id={{.Id}}">update</a>  - <a href="/books/delete/process?id={{.Id}}">delete</a>  - <a href="/author/show?id={{.Author_id}}">chekAuthor</a></p>
 {{end}}
 
-<p class="link"><a href="/books/create">Insert A Book</a></p>
+<p class="link"><a href="/books/create?current_user_id={{.Current_user.id}}">Insert A Book</a></p>
 </body>
 </html>

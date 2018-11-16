@@ -76,6 +76,30 @@ func PutBook(r *http.Request) (commonStruct.Book, error) {
 	return bk, nil
 }
 
+// putAuthor(r){
+// }
+
+func PutComment(r *http.Request, title string) error {
+	comment := r.FormValue("comment")
+	userId, _ := strconv.Atoi(r.FormValue("current_user_id"))
+
+	var bookId int
+	row := config.DB.QueryRow("select books.id from books where title = $1", title)
+	if err := row.Scan(&bookId); err != nil {
+		return err
+	}
+
+	_, err := config.DB.Exec("INSERT INTO comments (text, book_id, user_id) VALUES ($1, $2, $3)", comment, userId, bookId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// func ceateRelation(r){
+//  userId :=
+// }
+
 func OneBook(r *http.Request) (commonStruct.Book, error) {
 	var bk = commonStruct.Book{}
 	id, _ := strconv.Atoi(r.FormValue("id"))

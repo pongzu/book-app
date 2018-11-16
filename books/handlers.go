@@ -1,6 +1,7 @@
 package books
 
 import (
+	"book_app/commonStruct"
 	"book_app/config"
 	"book_app/user"
 	"database/sql"
@@ -23,17 +24,30 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := user.GetCurrentUser(r)
+	// get current_user_id
+	currentUser, err := user.GetCurrentUser(r)
 	if err != nil {
-		fmt.Printf("can not get current user get with this reason %v:", err)
+		fmt.Printf("can not get current user get with this reason: %v", err)
 	}
-	log.Printf("this is user %v:", u)
 
-	config.TPL.ExecuteTemplate(w, "books.gohtml", bks)
+	// create data structure to pass to template
+	data := struct {
+		BOOKS       []commonStruct.Book
+		CurrentUser user.User
+	}{
+		bks,
+		currentUser,
+	}
+
+	config.TPL.ExecuteTemplate(w, "books.gohtml", data)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
-	config.TPL.ExecuteTemplate(w, "create.gohtml", nil)
+	u, err := user.GetCurrentUser(r)
+	if err != nil {
+		fmt.Printf("can not get current user get with this reason: %v", err)
+	}
+	config.TPL.ExecuteTemplate(w, "create.gohtml", u)
 }
 
 func CreateProcess(w http.ResponseWriter, r *http.Request) {
@@ -42,8 +56,14 @@ func CreateProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := PutBook(r)
+	bk, err := PutBook(r)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+
+	if err := PutComment(r, bk.Title); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
