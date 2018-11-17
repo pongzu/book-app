@@ -76,3 +76,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// func Show(w http.ResponseWriter, r *http.Request) {
+// 	CreateUser := GetCurrentUser(r)
+
+// }

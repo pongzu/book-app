@@ -25,10 +25,26 @@ func AllBooks() ([]commonStruct.Book, error) {
 		}
 		bks = append(bks, bk)
 	}
+
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 	return bks, nil
+}
+
+func OneBook(r *http.Request) (commonStruct.Book, error) {
+	var bk = commonStruct.Book{}
+	id, _ := strconv.Atoi(r.FormValue("id"))
+
+	if id == 0 {
+		return bk, errors.New("400. Bad Reqest")
+	}
+
+	row := config.DB.QueryRow("SELECT * FROM books WHERE id = $1", id)
+	if err := row.Scan(&bk.Id, &bk.Title, &bk.Author, &bk.Price, &bk.Author_id); err != nil {
+		return bk, err
+	}
+	return bk, nil
 }
 
 func PutBook(r *http.Request) (commonStruct.Book, error) {
@@ -86,9 +102,9 @@ func PutBook(r *http.Request) (commonStruct.Book, error) {
 // }
 
 func PutComment(r *http.Request, id int) (commonStruct.Comment, error) {
-	comment := r.FormValue("comment")
-	userId, _ := strconv.Atoi(r.FormValue("current_user_id"))
 	bookId := id
+	userId, _ := strconv.Atoi(r.FormValue("current_user_id"))
+	comment := r.FormValue("comment")
 
 	var c commonStruct.Comment
 
@@ -118,21 +134,6 @@ func PutRelation(c commonStruct.Comment) error {
 		return err
 	}
 	return nil
-}
-
-func OneBook(r *http.Request) (commonStruct.Book, error) {
-	var bk = commonStruct.Book{}
-	id, _ := strconv.Atoi(r.FormValue("id"))
-
-	if id == 0 {
-		return bk, errors.New("400. Bad Reqest")
-	}
-
-	row := config.DB.QueryRow("SELECT * FROM books WHERE id = $1", id)
-	if err := row.Scan(&bk.Id, &bk.Title, &bk.Author, &bk.Price, &bk.Author_id); err != nil {
-		return bk, err
-	}
-	return bk, nil
 }
 
 func UpdateBook(r *http.Request) (commonStruct.Book, error) {

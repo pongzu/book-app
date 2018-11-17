@@ -7,7 +7,10 @@
 </head>
 <body>
 
-{{.CurrentUser.Un}}
+
+
+<a href="/users/show?id={{.CurrentUser.Id}}">{{.CurrentUser.Un}}</a>
+
 
 {{range .BOOKS}}
 <p><a href="/books/show?id={{.Id}}">{{.Title}}</a> - {{.Author}} - {{.Price}} - <a href="/books/update?id={{.Id}}">update</a>  - <a href="/books/delete/process?id={{.Id}}">delete</a>  - <a href="/author/show?id={{.Author_id}}">chekAuthor</a></p>
