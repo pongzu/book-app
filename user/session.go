@@ -4,7 +4,6 @@ import (
 	"book_app/config"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -81,8 +80,6 @@ func GetCurrentUser(r *http.Request) (User, error) {
 		return u, errors.New("500. Internal Server error")
 	}
 	u.Password = []byte(p)
-	log.Println("ここおおっっこっここここ")
-	log.Println(u)
 
 	return u, nil
 }
